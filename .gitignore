@@ -1,0 +1,20 @@
+﻿################################################################################
+# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/CallApisDynaTrace/v17
+/.vs/DAL/DesignTimeBuild
+/.vs/DAL/FileContentIndex
+/.vs
+/BLL/bin/Debug/net6.0
+/BLL/obj
+/DAL/bin/Debug/net6.0
+/DAL/obj
+/Entity/bin/Debug/net6.0
+/Entity/obj
+/Resources/bin/Debug/net6.0
+/Resources/obj
+/StaticsCarterasAPI/bin/Debug/net6.0
+/StaticsCarterasAPI/obj
+/StatiscCarterasConsole/bin/Debug/net6.0
+/StatiscCarterasConsole/obj
