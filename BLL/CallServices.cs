@@ -9,17 +9,50 @@ using System.Threading.Tasks;
 
 namespace BLL
 {
-    public class CallServices
+    public class CallServices   : ICallService
     {
-        public CommonResponse CallMetricResponse(MetricsRequest metricsRequest)
+        readonly DAL.ICallService dataApi;
+
+        public CallServices(DAL.ICallService dataApi)
         {
-            CommonResponse response = new();
-            string url = metricsRequest.typeReport == TypeReport.PRESTAMOS ? getUrlPrestamos(metricsRequest.typeData, metricsRequest.AppsByPrestamos) : getUrlAbonos(metricsRequest.typeData, metricsRequest.AppsByAbonos);
-            metricsRequest.FromUnixDate = ConverDateToUnixTime(metricsRequest.FromDate.Value);
-            metricsRequest.ToUnixDate = ConverDateToUnixTime(metricsRequest.ToDate.Value);
-            url = string.Format(url, metricsRequest.FromUnixDate, metricsRequest.ToUnixDate);
-            Uri uri = new Uri(url);
-            return  response;
+            this.dataApi = dataApi;
+        }
+
+        public async Task<IEnumerable<Entity.Report>> CallMetricResponse(MetricsRequest metricsRequest)
+        {
+            IEnumerable<MetricResponse> response;
+
+            if (!metricsRequest.FromDate.HasValue)
+            {
+                metricsRequest.FromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+                metricsRequest.ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+            }
+
+            string url = metricsRequest.typeReport == TypeReport.PRESTAMOS ? getUrlPrestamos(metricsRequest.typeData, metricsRequest.appsByPrestamos) : getUrlAbonos(metricsRequest.typeData, metricsRequest.appsByAbonos);
+            DateTime startDate = metricsRequest.FromDate.Value;
+            List<MetricResponse> metricResponse = new();
+            do
+            {
+                DateTime finalDate = startDate.AddMinutes(59);
+                url = string.Format(url, ConverDateToUnixTime(startDate), ConverDateToUnixTime(finalDate));
+                metricsRequest.UriRequest = new Uri(url);
+                metricsRequest.DateData = finalDate;
+                metricResponse.Add(await dataApi.CallMetricService(metricsRequest));
+                startDate= startDate.AddHours(1);
+            } while (startDate < metricsRequest.ToDate.Value);
+
+            List<Entity.Report> listResult = (from item in metricResponse
+                                              where item.ExceptionMessage == null
+                                              select new Entity.Report
+                                              {
+                                                  typeReport = metricsRequest.typeReport == TypeReport.PRESTAMOS ? TypeReport.PRESTAMOS.ToString() : TypeReport.ABONOS.ToString(),
+                                                  typeData = metricsRequest.typeData == TypeData.MONTO ? "MONTO" : "MOVIMIENTO",
+                                                  app = item.apps.ToString(),
+                                                  hour = item.DateData.Value.Hour,
+                                                  date = item.DateData.Value.ToShortDateString(),
+                                                  valueData = item.Total
+                                              }).ToList();
+            return listResult;
         } 
 
         private long ConverDateToUnixTime(DateTime time)
@@ -38,7 +71,7 @@ namespace BLL
             return origin.AddMilliseconds(unixTime);
         }
 
-        private string getUrlPrestamos(TypeData typeData, AppsByPrestamos appsByPrestamos)
+        private string getUrlPrestamos(TypeData typeData, AppsByPrestamos? appsByPrestamos)
         {
             string response = string.Empty;
             Dictionary<AppsByPrestamos, string> url;
@@ -66,11 +99,11 @@ namespace BLL
                     {AppsByPrestamos.REDEFECTIVA,"https://sxf54568.live.dynatrace.com/api/v2/metrics/query?metricSelector=(calc:service.numerodeabonos_redefectiva_wsabonos:splitBy():sort(value(auto,descending)):limit(20)):limit(100):names&from={0}&to={1}&resolution=Inf&mzSelector=mzId(-2939186880565774010)" },
                 };
             }
-            response = url[appsByPrestamos];
+            response = url[appsByPrestamos.Value];
             return response;
         }
 
-        private string getUrlAbonos(TypeData typeData, AppsByAbonos appsByAbonos)
+        private string getUrlAbonos(TypeData typeData, AppsByAbonos? appsByAbonos)
         {
             string response = string.Empty;
             Dictionary<AppsByAbonos, string> url;
@@ -98,7 +131,7 @@ namespace BLL
                     {AppsByAbonos.COBRANZA,"https://sxf54568.live.dynatrace.com/api/v2/metrics/query?metricSelector=(calc:service.numero_abonos_tienda_cobranza:splitBy():sort(value(auto,descending)):limit(20)):limit(100):names&from={0}&to={1}&resolution=Inf&mzSelector=mzId(-2939186880565774010)" },
                 };
             }
-            response = url[appsByAbonos];
+            response = url[appsByAbonos.Value];
             return response;
         }
     }

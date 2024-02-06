@@ -32,4 +32,17 @@
         OXXO = 5,
         COBRANZA = 6,
     }
+    public enum Apps
+    {
+        APP = 1,
+        COM = 2,
+        WHATAPP = 3,
+        PPAU = 4,
+        TELECOM = 5,
+        REDEFECTIVA = 6,
+        ATM = 7,
+        OXXO = 8,
+        COBRANZA = 9,
+        Unk=10
+    }
 }

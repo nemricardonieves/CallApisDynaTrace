@@ -19,7 +19,7 @@ namespace BLL
             string path = Environment.CurrentDirectory;
             string reportName = "StaticsCarteras.xlsx";
             string sheet = string.Concat(DateTime.Now.ToString("yyyMMdd"));
-            ExcelGenerate.GenerateReport(path, reportName, sheet, response.ReportList);
+           // ExcelGenerate.GenerateReport(path, reportName, sheet, response.ReportList);
             return response;
         }
     }

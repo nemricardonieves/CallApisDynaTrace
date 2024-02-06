@@ -13,7 +13,9 @@
         public int? SelectorApp { get; set; }
         public TypeReport typeReport { get; set; }
         public TypeData typeData { get; set; }
-        public AppsByAbonos AppsByAbonos { get; set; }
-        public AppsByPrestamos AppsByPrestamos { get; set; }
+        public AppsByAbonos? appsByAbonos { get; set; }
+        public AppsByPrestamos? appsByPrestamos { get; set; }
+        public Uri UriRequest { get; set; }
+        public DateTime? DateData { get; set; }
     }
 }

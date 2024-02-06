@@ -10,7 +10,7 @@ namespace BLL
 {
     public class ExcelGenerate
     {
-        public static void GenerateReport(string path, string reportName, string sheetName, IEnumerable<Entity.CommonEntity> reportData)
+        public static void GenerateReport(string path, string reportName, string sheetName, IEnumerable<Entity.Report> reportData)
         {
             ExcelPackage excelPackage = new();
             excelPackage.Workbook.Worksheets.Add(sheetName);
