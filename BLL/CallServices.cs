@@ -24,18 +24,19 @@ namespace BLL
 
             if (!metricsRequest.FromDate.HasValue)
             {
-                metricsRequest.FromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-                metricsRequest.ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 59, 59);
+                DateTime dayBefore = DateTime.Now.AddDays(-1);
+                metricsRequest.FromDate = new DateTime(dayBefore.Year, dayBefore.Month, dayBefore.Day, 0, 0, 0);
+                metricsRequest.ToDate = new DateTime(dayBefore.Year, dayBefore.Month, dayBefore.Day, 23, 59, 59);
             }
 
-            string url = metricsRequest.typeReport == TypeReport.PRESTAMOS ? getUrlPrestamos(metricsRequest.typeData, metricsRequest.appsByPrestamos) : getUrlAbonos(metricsRequest.typeData, metricsRequest.appsByAbonos);
+            string urlFormat = metricsRequest.typeReport == TypeReport.PRESTAMOS ? getUrlPrestamos(metricsRequest.typeData, metricsRequest.appsByPrestamos) : getUrlAbonos(metricsRequest.typeData, metricsRequest.appsByAbonos);
             DateTime startDate = metricsRequest.FromDate.Value;
             List<MetricResponse> metricResponse = new();
             do
             {
                 DateTime finalDate = startDate.AddMinutes(59);
-                url = string.Format(url, ConverDateToUnixTime(startDate), ConverDateToUnixTime(finalDate));
-                metricsRequest.UriRequest = new Uri(url);
+                string urlTo = string.Format(urlFormat, ConverDateToUnixTime(startDate), ConverDateToUnixTime(finalDate));
+                metricsRequest.UriRequest = new Uri(urlTo);
                 metricsRequest.DateData = finalDate;
                 metricResponse.Add(await dataApi.CallMetricService(metricsRequest));
                 startDate= startDate.AddHours(1);
@@ -56,11 +57,7 @@ namespace BLL
         } 
 
         private long ConverDateToUnixTime(DateTime time)
-        {               /*
-                         *  DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-    TimeSpan diff = (date ?? DateTime.Now) - origin;
-    return Convert.ToDouble(Math.Floor(diff.TotalSeconds));
-                         */
+        {
             long unixTime = ((DateTimeOffset)time).ToUnixTimeMilliseconds();
             return unixTime;
         }

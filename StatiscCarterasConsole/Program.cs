@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 
 try
 {
-    Console.WriteLine("Comienza proceso");
+    Console.WriteLine("Comienza proceso, "+DateTime.Now.ToLongDateString());
     List<Entity.Report> response = new();
     IEnumerable<Entity.Report> result;
     BLL.CallServices callService = new (new DAL.CallService());
@@ -23,8 +23,8 @@ try
                         typeData = tData,
                         appsByPrestamos = tapp,
                         appsByAbonos = null,
-                        FromDate=new DateTime(2024,2,5,9,0,0),
-                        ToDate = new DateTime(2024, 2, 5, 9, 59, 59),
+                        FromDate = null, //new DateTime(2024, 1, 1, 12, 0, 0),
+                        ToDate = null // new DateTime(2024, 1, 31, 11, 59, 59),
                     });
 
                     response.AddRange(result);
@@ -41,8 +41,8 @@ try
                         typeData = tData,
                         appsByPrestamos = null,
                         appsByAbonos = tapp,
-                        FromDate = new DateTime(2024, 2, 5, 9, 0, 0),
-                        ToDate = new DateTime(2024, 2, 5, 9, 59, 59),
+                        FromDate = null, // new DateTime(2024, 1, 1, 12, 0, 0),
+                        ToDate = null // new DateTime(2024, 1, 31, 11, 59, 59),
                     });
 
                     response.AddRange(result);
@@ -54,7 +54,7 @@ try
 
     string path = Environment.CurrentDirectory;
     BLL.ExcelGenerate.GenerateReport(path, "reporte.xls", "reporte", response);
-    Console.WriteLine("Termina Proceso");
+    Console.WriteLine("Termina Proceso, " + DateTime.Now.ToLongDateString());
 }
 catch (Exception ex)
 {

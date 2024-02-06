@@ -11,7 +11,7 @@ namespace DAL
             try
             {
                 var client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", "Api-Token " + "dt0c01.HC64WEWL3FKZOBESWHLXCDNH.KYESEJYU4B6NXGTPLKVTSAUDCMBQ34TBCVGZ5SYKC66WUDQPC2NQ3SIFDCMHAA2Q");
+                client.DefaultRequestHeaders.Add("Authorization", "Api-Token " + "");
                 HttpResponseMessage responseApi = await client.GetAsync(request.UriRequest);
 
                 response.DateData = request.DateData;
