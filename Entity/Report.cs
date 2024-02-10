@@ -2,11 +2,14 @@
 {
     public class Report
     {
-        public string? typeReport { get; set; }
-        public string?  typeData { get; set; }
-        public string? app { get; set; }
-        public string date { get; set; }
-        public int hour { get; set; }
-        public long? valueData { get; set; }
+        public string? Reporte { get; set; }        
+        public string? Servicio { get; set; }
+        public string Anio { get; set; }
+        public string Mes { get; set; }
+        public string Dia { get; set; }
+        public int Hora { get; set; }
+        public string Monto { get; set; }
+        public long MontoSinFormato { get; set; }
+        public long Movimientos { get; set; }
     }
 }

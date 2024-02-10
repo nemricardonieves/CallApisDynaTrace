@@ -7,12 +7,14 @@
     public enum TypeReport
     {
         PRESTAMOS=1,
-        ABONOS=2
+        ABONOS=2,
+        UNKNOW=3
     }
     public enum TypeData
     {
         MOVIMIENTO=1,
-        MONTO=2
+        MONTO=2,
+        UNKNOW = 3
     }
     public enum AppsByPrestamos
     {
@@ -20,8 +22,7 @@
           COM=2,
           WHATAPP=3,
           PPAU=4,
-          TELECOM=5,
-          REDEFECTIVA=6,
+        UNKNOW = 5
     }
     public enum AppsByAbonos
     {
@@ -31,6 +32,9 @@
         ATM = 4,
         OXXO = 5,
         COBRANZA = 6,
+        TELECOM = 7,
+        REDEFECTIVA = 8,
+        UNKNOW = 9
     }
     public enum Apps
     {

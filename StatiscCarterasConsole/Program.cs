@@ -9,51 +9,81 @@ try
     List<Entity.Report> response = new();
     IEnumerable<Entity.Report> result;
     BLL.CallServices callService = new (new DAL.CallService());
-    foreach (TypeReport tReport in  Enum.GetValues(typeof(TypeReport)))
+
+    TypeReport report = TypeReport.UNKNOW;
+    TypeData data= TypeData.UNKNOW;
+    AppsByAbonos appsByAbonos = AppsByAbonos.UNKNOW;
+    AppsByPrestamos appsByPrestamos= AppsByPrestamos.UNKNOW;
+
+    if (report != TypeReport.UNKNOW & data != TypeData.UNKNOW & (appsByAbonos != AppsByAbonos.UNKNOW || appsByPrestamos != AppsByPrestamos.UNKNOW))
     {
-        foreach (TypeData tData in Enum.GetValues(typeof(TypeData)))
+        await callService.CallMetricResponse(new MetricsRequest
         {
-            if (tReport== TypeReport.PRESTAMOS)
+            typeReport = report,
+            typeData = data,
+            appsByPrestamos = appsByPrestamos != AppsByPrestamos.UNKNOW ? appsByPrestamos : null,
+            appsByAbonos = appsByAbonos != AppsByAbonos.UNKNOW ? appsByAbonos : null,
+            FromDate = new DateTime(2024, 2, 7, 0, 0, 0),
+            ToDate = new DateTime(2024, 2, 7, 23, 29, 59)
+        });
+    }
+    else
+    {
+        foreach (TypeReport tReport in Enum.GetValues(typeof(TypeReport)))
+        {
+
+            if (tReport == TypeReport.PRESTAMOS)
             {
                 foreach (AppsByPrestamos tapp in Enum.GetValues(typeof(AppsByPrestamos)))
                 {
-                    result = await callService.CallMetricResponse(new MetricsRequest
+                    if (tapp != AppsByPrestamos.UNKNOW)
                     {
-                        typeReport = tReport,
-                        typeData = tData,
-                        appsByPrestamos = tapp,
-                        appsByAbonos = null,
-                        FromDate = null, //new DateTime(2024, 1, 1, 12, 0, 0),
-                        ToDate = null // new DateTime(2024, 1, 31, 11, 59, 59),
-                    });
+                        result = await callService.CallMetricResponse(new MetricsRequest
+                        {
+                            typeReport = tReport,
+                            //typeData = tData,
+                            appsByPrestamos = tapp,
+                            appsByAbonos = null,
+                            //FromDate = null, 
+                            FromDate = new DateTime(2024, 1, 1, 7, 0, 0),
+                            //ToDate = null 
+                            ToDate = new DateTime(2024, 1, 31, 23, 59, 59),
+                        });
 
-                    response.AddRange(result);
-                    result = null;
+                        response.AddRange(result);
+                        result = null;
+                    }
                 }
             }
             else
             {
                 foreach (AppsByAbonos tapp in Enum.GetValues(typeof(AppsByAbonos)))
                 {
-                    result = await callService.CallMetricResponse(new MetricsRequest
+                    if (tapp != AppsByAbonos.UNKNOW)
                     {
-                        typeReport = tReport,
-                        typeData = tData,
-                        appsByPrestamos = null,
-                        appsByAbonos = tapp,
-                        FromDate = null, // new DateTime(2024, 1, 1, 12, 0, 0),
-                        ToDate = null // new DateTime(2024, 1, 31, 11, 59, 59),
-                    });
+                        result = await callService.CallMetricResponse(new MetricsRequest
+                        {
+                            typeReport = tReport,
+                            //typeData = tData,
+                            appsByPrestamos = null,
+                            appsByAbonos = tapp,
+                            //FromDate = null, 
+                            FromDate = new DateTime(2024, 1, 1, 7, 0, 0),
+                            //ToDate = null 
+                            ToDate = new DateTime(2024, 1, 31, 23, 59, 59),
+                        });
 
-                    response.AddRange(result);
-                    result = null;
+                        response.AddRange(result);
+                        result = null;
+                    }
                 }
             }
+
         }
     }
 
     string path = Environment.CurrentDirectory;
-    BLL.ExcelGenerate.GenerateReport(path, "reporte.xls", "reporte", response);
+    BLL.ExcelGenerate.GenerateReport(path, "reporte1.xls", "reporte", response);
     Console.WriteLine("Termina Proceso, " + DateTime.Now.ToLongDateString());
 }
 catch (Exception ex)

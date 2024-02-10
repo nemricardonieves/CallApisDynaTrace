@@ -9,6 +9,7 @@ namespace DAL
 {
     public interface ICallService
     {
-         Task<MetricResponse>  CallMetricService(MetricsRequest request);
+         Task<MetricResponse> CallMetricServiceAmmount(MetricsRequest request);
+        Task<MetricResponse> CallMetricServiceMovemments(MetricsRequest request);
     }
 }
